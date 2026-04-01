@@ -1,0 +1,41 @@
+name: MacDitto
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    macOS: "13.0"
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.yourname.macditto
+    PRODUCT_NAME: MacDitto
+    SWIFT_VERSION: 5.9
+    CODE_SIGN_STYLE: Automatic
+targets:
+  MacDitto:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/MacDitto
+    info:
+      path: Config/App/Info.plist
+    entitlements:
+      path: Config/App/MacDitto.entitlements
+    configFiles:
+      Debug: Config/Xcode/Debug.xcconfig
+      Release: Config/Xcode/Release.xcconfig
+    settings:
+      base:
+        INFOPLIST_KEY_CFBundleDisplayName: MacDitto
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_NSHumanReadableCopyright: Copyright 2026
+        INFOPLIST_KEY_NSAppleEventsUsageDescription: MacDitto sends paste commands to the active app after you choose a clipboard item.
+        INFOPLIST_KEY_NSInputMonitoringUsageDescription: MacDitto listens for a global keyboard shortcut to open clipboard history.
+        GENERATE_INFOPLIST_FILE: false
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+        ENABLE_HARDENED_RUNTIME: true
+        CODE_SIGN_ENTITLEMENTS: Config/App/MacDitto.entitlements
+    scheme:
+      testTargets: []

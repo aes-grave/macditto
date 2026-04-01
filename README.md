@@ -21,15 +21,47 @@ This repo is intentionally standalone. It does not depend on the original Window
 
 - macOS 13 or newer
 - Xcode 15 or newer
+- Xcode command line tools
 
-## Run
+## Repo Layout
+
+```text
+Package.swift
+project.yml
+Config/
+  App/
+  Xcode/
+Sources/
+  MacDitto/
+scripts/
+```
+
+## Quick Start On a Mac
+
+### Swift Package path
 
 ```bash
 swift build
 swift run MacDitto
 ```
 
-You can also open `Package.swift` in Xcode and run the `MacDitto` scheme.
+### Xcode project path
+
+Install XcodeGen once:
+
+```bash
+brew install xcodegen
+```
+
+Then generate and open the native project:
+
+```bash
+./scripts/bootstrap-mac.sh
+```
+
+That creates `MacDitto.xcodeproj` from [project.yml](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\project.yml) and opens it in Xcode.
+
+If you do not want to use XcodeGen, you can still open `Package.swift` directly in Xcode and run the package target.
 
 ## Permissions
 
@@ -40,24 +72,18 @@ To use the global hotkey and synthetic paste behavior, macOS may prompt for:
 
 Check `System Settings` -> `Privacy & Security` if the popup hotkey or auto-paste does not work.
 
-## Project Layout
-
-```text
-Package.swift
-Sources/
-  MacDitto/
-```
-
 ## GitHub Setup
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
 git remote add origin <your-github-repo-url>
 git push -u origin main
 ```
+
+## Before Release
+
+- Replace the placeholder bundle identifier in [project.yml](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\project.yml) and [Release.xcconfig](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\Config\Xcode\Release.xcconfig)
+- Add your team or personal signing settings in Xcode
+- Add an app icon and any future entitlements you need
 
 ## Notes
 
