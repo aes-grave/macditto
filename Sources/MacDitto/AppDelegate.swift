@@ -117,7 +117,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func configureSettingsWindow() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 440, height: 260),
+            contentRect: NSRect(x: 0, y: 0, width: 360, height: 230),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false

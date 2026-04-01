@@ -14,21 +14,27 @@ struct SettingsView: View {
                     .font(.headline)
 
                 HStack(spacing: 12) {
-                    settingsPickerRow(title: "Modifier", width: 180) {
-                        PopupButtonRepresentable(
-                            items: HotkeyModifierPreset.allCases.map(\.displayName),
-                            selectedIndex: modifierIndexBinding
-                        )
-                        .frame(maxWidth: .infinity, minHeight: 28)
-                    }
+                    Text("Modifier")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 70, alignment: .leading)
+                    PopupButtonRepresentable(
+                        items: HotkeyModifierPreset.allCases.map(\.displayName),
+                        selectedIndex: modifierIndexBinding
+                    )
+                    .frame(width: 160, height: 28)
+                    Spacer()
+                }
 
-                    settingsPickerRow(title: "Key", width: 110) {
-                        PopupButtonRepresentable(
-                            items: HotkeyOption.all.map(\.key),
-                            selectedIndex: keyIndexBinding
-                        )
-                        .frame(maxWidth: .infinity, minHeight: 28)
-                    }
+                HStack(spacing: 12) {
+                    Text("Key")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 70, alignment: .leading)
+                    PopupButtonRepresentable(
+                        items: HotkeyOption.all.map(\.key),
+                        selectedIndex: keyIndexBinding
+                    )
+                    .frame(width: 90, height: 28)
+                    Spacer()
                 }
 
                 Text("Current shortcut: \(settings.hotkeyDisplayName)")
@@ -53,7 +59,7 @@ struct SettingsView: View {
             Spacer()
         }
         .padding(20)
-        .frame(width: 440, height: 260)
+        .frame(width: 360, height: 230)
     }
 
     private var launchAtLoginBinding: Binding<Bool> {
@@ -99,26 +105,6 @@ struct SettingsView: View {
                 keyBinding.wrappedValue = HotkeyOption.all[newValue]
             }
         )
-    }
-
-    private func settingsPickerRow<Content: View>(title: String, width: CGFloat, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            content()
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(NSColor.controlBackgroundColor))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.secondary.opacity(0.15), lineWidth: 1)
-                )
-        }
-        .frame(width: width, alignment: .leading)
     }
 }
 
