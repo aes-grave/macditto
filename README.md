@@ -1,12 +1,12 @@
 # MacDitto
 
-MacDitto is a native macOS clipboard history app derived from Ditto on Windows.
+MacDitto is a native macOS clipboard history app forked from Ditto on Windows.
 
 This repo is intentionally standalone. It does not depend on the original Windows Ditto source tree.
 
 ## Origin And Credit
 
-Ditto has been an extremely useful Windows clipboard manager for years, and this repository exists because I wanted a similar workflow on macOS.
+Ditto has been an extremely useful Windows clipboard manager for me for years, and this repository exists because I wanted a similar workflow on macOS. This is a work in progress, I make no promises on whether it works. 
 
 Original Ditto project:
 - https://github.com/sabrogden/Ditto
