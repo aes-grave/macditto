@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -14,25 +15,19 @@ struct SettingsView: View {
 
                 HStack(spacing: 12) {
                     settingsPickerRow(title: "Modifier", width: 180) {
-                        Picker("Modifier", selection: modifierBinding) {
-                            ForEach(HotkeyModifierPreset.allCases) { preset in
-                                Text(preset.displayName).tag(preset)
-                            }
-                        }
-                        .labelsHidden()
-                        .pickerStyle(.menu)
-                        .frame(maxWidth: .infinity)
+                        PopupButtonRepresentable(
+                            items: HotkeyModifierPreset.allCases.map(\.displayName),
+                            selectedIndex: modifierIndexBinding
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 28)
                     }
 
                     settingsPickerRow(title: "Key", width: 110) {
-                        Picker("Key", selection: keyBinding) {
-                            ForEach(HotkeyOption.all) { option in
-                                Text(option.key).tag(option)
-                            }
-                        }
-                        .labelsHidden()
-                        .pickerStyle(.menu)
-                        .frame(maxWidth: .infinity)
+                        PopupButtonRepresentable(
+                            items: HotkeyOption.all.map(\.key),
+                            selectedIndex: keyIndexBinding
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 28)
                     }
                 }
 
@@ -82,6 +77,30 @@ struct SettingsView: View {
         )
     }
 
+    private var modifierIndexBinding: Binding<Int> {
+        Binding(
+            get: {
+                HotkeyModifierPreset.allCases.firstIndex(of: settings.hotkey.modifierPreset) ?? 0
+            },
+            set: { newValue in
+                guard HotkeyModifierPreset.allCases.indices.contains(newValue) else { return }
+                modifierBinding.wrappedValue = HotkeyModifierPreset.allCases[newValue]
+            }
+        )
+    }
+
+    private var keyIndexBinding: Binding<Int> {
+        Binding(
+            get: {
+                HotkeyOption.all.firstIndex(of: settings.hotkeyOption) ?? 0
+            },
+            set: { newValue in
+                guard HotkeyOption.all.indices.contains(newValue) else { return }
+                keyBinding.wrappedValue = HotkeyOption.all[newValue]
+            }
+        )
+    }
+
     private func settingsPickerRow<Content: View>(title: String, width: CGFloat, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -100,5 +119,51 @@ struct SettingsView: View {
                 )
         }
         .frame(width: width, alignment: .leading)
+    }
+}
+
+private struct PopupButtonRepresentable: NSViewRepresentable {
+    let items: [String]
+    @Binding var selectedIndex: Int
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(selectedIndex: $selectedIndex)
+    }
+
+    func makeNSView(context: Context) -> NSPopUpButton {
+        let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.selectionChanged(_:))
+        button.bezelStyle = .rounded
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        update(button)
+        return button
+    }
+
+    func updateNSView(_ nsView: NSPopUpButton, context: Context) {
+        update(nsView)
+    }
+
+    private func update(_ button: NSPopUpButton) {
+        if button.itemTitles != items {
+            button.removeAllItems()
+            button.addItems(withTitles: items)
+        }
+
+        if items.indices.contains(selectedIndex) {
+            button.selectItem(at: selectedIndex)
+        }
+    }
+
+    final class Coordinator: NSObject {
+        @Binding private var selectedIndex: Int
+
+        init(selectedIndex: Binding<Int>) {
+            self._selectedIndex = selectedIndex
+        }
+
+        @objc func selectionChanged(_ sender: NSPopUpButton) {
+            selectedIndex = sender.indexOfSelectedItem
+        }
     }
 }
