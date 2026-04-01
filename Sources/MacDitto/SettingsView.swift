@@ -6,16 +6,30 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("Hotkey") {
-                Picker("Modifier", selection: modifierBinding) {
-                    ForEach(HotkeyModifierPreset.allCases) { preset in
-                        Text(preset.displayName).tag(preset)
+                LabeledContent("Modifier") {
+                    Menu(settings.hotkey.modifierPreset.displayName) {
+                        ForEach(HotkeyModifierPreset.allCases) { preset in
+                            Button(preset.displayName) {
+                                settings.updateHotkeyModifier(preset)
+                            }
+                        }
                     }
+                    .frame(width: 160, alignment: .leading)
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
                 }
 
-                Picker("Key", selection: keyBinding) {
-                    ForEach(HotkeyOption.all) { option in
-                        Text(option.key).tag(option)
+                LabeledContent("Key") {
+                    Menu(settings.hotkeyOption.key) {
+                        ForEach(HotkeyOption.all) { option in
+                            Button(option.key) {
+                                settings.updateHotkeyKey(option)
+                            }
+                        }
                     }
+                    .frame(width: 100, alignment: .leading)
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
                 }
 
                 Text("Current shortcut: \(settings.hotkeyDisplayName)")
@@ -36,20 +50,6 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .padding(20)
         .frame(width: 420, height: 240)
-    }
-
-    private var modifierBinding: Binding<HotkeyModifierPreset> {
-        Binding(
-            get: { settings.hotkey.modifierPreset },
-            set: { settings.updateHotkeyModifier($0) }
-        )
-    }
-
-    private var keyBinding: Binding<HotkeyOption> {
-        Binding(
-            get: { settings.hotkeyOption },
-            set: { settings.updateHotkeyKey($0) }
-        )
     }
 
     private var launchAtLoginBinding: Binding<Bool> {
