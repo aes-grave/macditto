@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var store: ClipboardStore
     @FocusState private var searchFocused: Bool
+    @FocusState private var historyFocused: Bool
     @State private var selectedItemID: ClipboardItem.ID?
 
     let onItemActivated: (ClipboardItem) -> Void
@@ -25,6 +26,7 @@ struct ContentView: View {
         .onAppear {
             refreshSelection()
             searchFocused = false
+            historyFocused = true
         }
         .onChange(of: store.filteredItems.map(\.id)) { _ in
             refreshSelection()
@@ -42,6 +44,7 @@ struct ContentView: View {
 
                 Button("Focus Search") {
                     searchFocused = true
+                    historyFocused = false
                 }
                 .keyboardShortcut("f", modifiers: [.command])
                 .hidden()
@@ -91,6 +94,8 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.secondary.opacity(0.12), lineWidth: 1)
             )
+            .focusable()
+            .focused($historyFocused)
             .onChange(of: selectedItemID) { id in
                 guard let id else { return }
                 withAnimation(.easeInOut(duration: 0.12)) {
@@ -101,6 +106,7 @@ struct ContentView: View {
                 if let id = selectedItemID {
                     proxy.scrollTo(id, anchor: .center)
                 }
+                historyFocused = true
             }
         }
         .onMoveCommand(perform: moveSelection)
@@ -153,6 +159,7 @@ struct ContentView: View {
         }
 
         selectedItemID = store.filteredItems[nextIndex].id
+        historyFocused = true
     }
 }
 
