@@ -24,7 +24,7 @@ struct ContentView: View {
         .frame(minWidth: 820, minHeight: 560)
         .onAppear {
             refreshSelection()
-            searchFocused = true
+            searchFocused = false
         }
         .onChange(of: store.filteredItems.map(\.id)) { _ in
             refreshSelection()
@@ -33,11 +33,19 @@ struct ContentView: View {
             onDismiss()
         }
         .background(
-            Button("Paste Selected") {
-                activateSelectedItem()
+            Group {
+                Button("Paste Selected") {
+                    activateSelectedItem()
+                }
+                .keyboardShortcut(.defaultAction)
+                .hidden()
+
+                Button("Focus Search") {
+                    searchFocused = true
+                }
+                .keyboardShortcut("f", modifiers: [.command])
+                .hidden()
             }
-            .keyboardShortcut(.defaultAction)
-            .hidden()
         )
     }
 
