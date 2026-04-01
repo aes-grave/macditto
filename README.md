@@ -33,6 +33,8 @@ Config/
   Xcode/
 Sources/
   MacDitto/
+    Resources/
+docs/
 scripts/
 ```
 
@@ -81,9 +83,10 @@ git push -u origin main
 
 ## Before Release
 
-- Replace the placeholder bundle identifier in [project.yml](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\project.yml) and [Release.xcconfig](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\Config\Xcode\Release.xcconfig)
+- Replace `ORGANIZATION_IDENTIFIER` in [Shared.xcconfig](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\Config\Xcode\Shared.xcconfig)
 - Add your team or personal signing settings in Xcode
-- Add an app icon and any future entitlements you need
+- Review the release checklist in [docs/RELEASE.md](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\docs\RELEASE.md)
+- Use [archive-mac.sh](C:\Users\jas\Desktop\MacDitto\MacDittoStandaloneRepo\scripts\archive-mac.sh) when you are ready to produce a Release archive
 
 ## Notes
 

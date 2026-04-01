@@ -1,2 +1,5 @@
-PRODUCT_BUNDLE_IDENTIFIER = com.yourname.macditto.dev
+// Update ORGANIZATION_IDENTIFIER once and the bundle IDs will follow.
+#include "Shared.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(ORGANIZATION_IDENTIFIER).macditto.dev
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG

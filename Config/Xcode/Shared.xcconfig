@@ -1,0 +1,7 @@
+// Replace this with a reverse-DNS identifier you control, for example:
+// ORGANIZATION_IDENTIFIER = io.github.yourhandle
+ORGANIZATION_IDENTIFIER = com.example
+
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY =
