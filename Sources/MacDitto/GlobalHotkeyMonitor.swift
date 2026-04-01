@@ -3,12 +3,16 @@ import AppKit
 final class GlobalHotkeyMonitor {
     private var globalMonitor: Any?
     private var localMonitor: Any?
-    private let settings: AppSettings
+    private var hotkey: HotkeyConfiguration
     private let onTrigger: () -> Void
 
-    init(settings: AppSettings, onTrigger: @escaping () -> Void) {
-        self.settings = settings
+    init(hotkey: HotkeyConfiguration, onTrigger: @escaping () -> Void) {
+        self.hotkey = hotkey
         self.onTrigger = onTrigger
+    }
+
+    func updateHotkey(_ hotkey: HotkeyConfiguration) {
+        self.hotkey = hotkey
     }
 
     func start() {
@@ -34,9 +38,9 @@ final class GlobalHotkeyMonitor {
 
     private func handle(event: NSEvent) {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        let required = settings.hotkey.modifierPreset.flags
+        let required = hotkey.modifierPreset.flags
 
-        guard modifiers == required, event.keyCode == settings.hotkey.keyCode else {
+        guard modifiers == required, event.keyCode == hotkey.keyCode else {
             return
         }
 

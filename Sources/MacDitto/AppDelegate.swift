@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 @MainActor
@@ -10,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var hotkeyMonitor: GlobalHotkeyMonitor?
     private let statusMenu = NSMenu()
     private var previousApplication: NSRunningApplication?
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -96,12 +98,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     private func configureHotkey() {
-        hotkeyMonitor = GlobalHotkeyMonitor(settings: settings) { [weak self] in
+        hotkeyMonitor = GlobalHotkeyMonitor(hotkey: settings.hotkey) { [weak self] in
             DispatchQueue.main.async {
                 self?.togglePanel()
             }
         }
         hotkeyMonitor?.start()
+
+        settings.$hotkey
+            .sink { [weak self] hotkey in
+                self?.hotkeyMonitor?.updateHotkey(hotkey)
+            }
+            .store(in: &cancellables)
     }
 
     private func positionPanel(_ panel: NSPanel) {
