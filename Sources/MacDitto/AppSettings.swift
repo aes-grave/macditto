@@ -115,6 +115,10 @@ final class AppSettings: ObservableObject {
         HotkeyOption.option(for: hotkey.keyCode)
     }
 
+    var hotkeyDisplayName: String {
+        "\(hotkey.modifierPreset.displayName)+\(hotkeyOption.key)"
+    }
+
     func updateHotkeyModifier(_ modifierPreset: HotkeyModifierPreset) {
         hotkey.modifierPreset = modifierPreset
         persistHotkey()

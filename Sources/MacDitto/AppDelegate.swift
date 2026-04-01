@@ -64,6 +64,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
         statusMenu.addItem(NSMenuItem(title: "Show Clipboard", action: #selector(showFromMenu), keyEquivalent: ""))
+        statusMenu.addItem(NSMenuItem(title: "Settings…", action: #selector(showSettings), keyEquivalent: ","))
         statusMenu.addItem(NSMenuItem.separator())
         statusMenu.addItem(NSMenuItem(title: "Quit", action: #selector(quit), keyEquivalent: "q"))
         statusMenu.items.forEach { $0.target = self }
@@ -161,6 +162,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     @objc private func showFromMenu() {
         showPanel()
+    }
+
+    @objc private func showSettings() {
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func quit() {

@@ -16,8 +16,9 @@ This repo is intentionally standalone. It does not depend on the original Window
 - Menu bar app with popup panel
 - Configurable global hotkey toggle
 - Keyboard navigation with arrow keys, Return, and Escape
+- Dedicated settings window
 - Launch at login toggle
-- HTML and image clipboard history support
+- HTML and image clipboard history support with richer previews
 - Local JSON persistence
 
 ## Requirements

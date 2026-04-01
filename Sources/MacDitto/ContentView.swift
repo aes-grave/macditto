@@ -1,8 +1,8 @@
+import AppKit
 import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var store: ClipboardStore
-    @EnvironmentObject private var settings: AppSettings
     @FocusState private var searchFocused: Bool
     @State private var selectedItemID: ClipboardItem.ID?
 
@@ -17,7 +17,6 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 14) {
             topBar
-            launchControls
             listView
             footer
         }
@@ -54,36 +53,6 @@ struct ContentView: View {
             Button("Clear Unpinned") {
                 store.clearUnpinned()
             }
-        }
-    }
-
-    private var launchControls: some View {
-        HStack(spacing: 14) {
-            Picker("Shortcut", selection: hotkeyModifierBinding) {
-                ForEach(HotkeyModifierPreset.allCases) { preset in
-                    Text(preset.displayName).tag(preset)
-                }
-            }
-            .pickerStyle(.menu)
-            .frame(width: 140)
-
-            Picker("Key", selection: hotkeyKeyBinding) {
-                ForEach(HotkeyOption.all) { option in
-                    Text(option.key).tag(option)
-                }
-            }
-            .pickerStyle(.menu)
-            .frame(width: 90)
-
-            Toggle("Launch at Login", isOn: launchAtLoginBinding)
-                .toggleStyle(.checkbox)
-
-            if let error = settings.launchAtLoginError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .lineLimit(2)
-            }
 
             Spacer()
         }
@@ -107,7 +76,7 @@ struct ContentView: View {
 
     private var footer: some View {
         HStack {
-            Text("Arrow keys move, Return pastes, Escape closes.")
+            Text("Arrow keys move, Return pastes, Escape closes. Settings are in the menu bar.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -115,27 +84,6 @@ struct ContentView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
-    }
-
-    private var hotkeyModifierBinding: Binding<HotkeyModifierPreset> {
-        Binding(
-            get: { settings.hotkey.modifierPreset },
-            set: { settings.updateHotkeyModifier($0) }
-        )
-    }
-
-    private var hotkeyKeyBinding: Binding<HotkeyOption> {
-        Binding(
-            get: { settings.hotkeyOption },
-            set: { settings.updateHotkeyKey($0) }
-        )
-    }
-
-    private var launchAtLoginBinding: Binding<Bool> {
-        Binding(
-            get: { settings.launchAtLoginEnabled },
-            set: { settings.setLaunchAtLoginEnabled($0) }
-        )
     }
 
     private func refreshSelection() {
@@ -203,6 +151,8 @@ private struct ClipboardRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
+            previewPane
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     if item.pinned {
@@ -259,5 +209,44 @@ private struct ClipboardRow: View {
         .onTapGesture(count: 2) {
             onItemActivated(item)
         }
+    }
+
+    @ViewBuilder
+    private var previewPane: some View {
+        switch item.kind {
+        case .image:
+            if let payload = item.payload, let nsImage = NSImage(data: payload) {
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 72, height: 72)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.secondary.opacity(0.15), lineWidth: 1)
+                    )
+            } else {
+                previewBadge(symbol: "photo")
+            }
+        case .html:
+            previewBadge(symbol: "chevron.left.forwardslash.chevron.right")
+        case .url:
+            previewBadge(symbol: "link")
+        case .fileReference:
+            previewBadge(symbol: "doc")
+        case .text:
+            previewBadge(symbol: "text.alignleft")
+        }
+    }
+
+    private func previewBadge(symbol: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.accentColor.opacity(0.12))
+            Image(systemName: symbol)
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+        }
+        .frame(width: 72, height: 72)
     }
 }
