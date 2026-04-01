@@ -65,6 +65,12 @@ That creates `MacDitto.xcodeproj` from [project.yml](C:\Users\jas\Desktop\MacDit
 
 If you do not want to use XcodeGen, you can still open `Package.swift` directly in Xcode and run the package target.
 
+## Local Development Without An Apple Developer Team
+
+The `Debug` configuration is set up to build without code signing so you can run locally on your Mac without a paid Apple Developer account.
+
+Use the generated Xcode project, keep the scheme on `Debug`, and build or run normally. If Xcode still shows signing UI noise, leave the team unset for `Debug`.
+
 ## Permissions
 
 To use the global hotkey and synthetic paste behavior, macOS may prompt for:
