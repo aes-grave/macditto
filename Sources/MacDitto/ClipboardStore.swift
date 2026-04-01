@@ -6,6 +6,8 @@ enum ClipboardItemKind: String, Codable {
     case text
     case url
     case fileReference
+    case html
+    case image
 }
 
 struct ClipboardItem: Identifiable, Codable, Equatable {
@@ -14,19 +16,22 @@ struct ClipboardItem: Identifiable, Codable, Equatable {
     let createdAt: Date
     var pinned: Bool
     var kind: ClipboardItemKind
+    var payload: Data?
 
     init(
         id: UUID = UUID(),
         value: String,
         createdAt: Date = Date(),
         pinned: Bool = false,
-        kind: ClipboardItemKind = .text
+        kind: ClipboardItemKind = .text,
+        payload: Data? = nil
     ) {
         self.id = id
         self.value = value
         self.createdAt = createdAt
         self.pinned = pinned
         self.kind = kind
+        self.payload = payload
     }
 }
 
@@ -68,7 +73,22 @@ final class ClipboardStore: ObservableObject {
     func copyToClipboard(_ item: ClipboardItem) {
         suppressNextCapture = true
         pasteboard.clearContents()
-        pasteboard.setString(item.value, forType: .string)
+        switch item.kind {
+        case .text, .url:
+            pasteboard.setString(item.value, forType: .string)
+        case .fileReference:
+            let fileURL = URL(fileURLWithPath: item.value)
+            pasteboard.writeObjects([fileURL as NSURL])
+        case .html:
+            if let payload = item.payload {
+                pasteboard.setData(payload, forType: .html)
+            }
+            pasteboard.setString(item.value, forType: .string)
+        case .image:
+            if let payload = item.payload {
+                pasteboard.setData(payload, forType: .tiff)
+            }
+        }
     }
 
     func delete(_ item: ClipboardItem) {
@@ -107,7 +127,10 @@ final class ClipboardStore: ObservableObject {
 
         guard let next = currentPasteboardItem() else { return }
 
-        if let first = items.first, first.value == next.value, first.kind == next.kind {
+        if let first = items.first,
+           first.value == next.value,
+           first.kind == next.kind,
+           first.payload == next.payload {
             return
         }
 
@@ -117,6 +140,19 @@ final class ClipboardStore: ObservableObject {
     }
 
     private func currentPasteboardItem() -> ClipboardItem? {
+        if let tiffData = pasteboard.data(forType: .tiff),
+           let image = NSImage(data: tiffData) {
+            let size = image.size
+            let preview = "Image \(Int(size.width))x\(Int(size.height))"
+            return ClipboardItem(value: preview, kind: .image, payload: tiffData)
+        }
+
+        if let htmlData = pasteboard.data(forType: .html),
+           let preview = htmlPreview(from: htmlData),
+           !preview.isEmpty {
+            return ClipboardItem(value: preview, kind: .html, payload: htmlData)
+        }
+
         if let text = pasteboard.string(forType: .string)?
             .trimmingCharacters(in: .whitespacesAndNewlines),
            !text.isEmpty {
@@ -135,6 +171,23 @@ final class ClipboardStore: ObservableObject {
         }
 
         return nil
+    }
+
+    private func htmlPreview(from data: Data) -> String? {
+        if let attributed = try? NSAttributedString(
+            data: data,
+            options: [.documentType: NSAttributedString.DocumentType.html],
+            documentAttributes: nil
+        ) {
+            let flattened = attributed.string
+                .replacingOccurrences(of: "\n", with: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return String(flattened.prefix(160))
+        }
+
+        return String(data: data, encoding: .utf8)?
+            .replacingOccurrences(of: "\n", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private func enforceItemLimit() {

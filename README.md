@@ -14,7 +14,10 @@ This repo is intentionally standalone. It does not depend on the original Window
 - Copy an entry back to the clipboard
 - Copy and immediately paste an entry
 - Menu bar app with popup panel
-- Global hotkey toggle with `Ctrl+Shift+V`
+- Configurable global hotkey toggle
+- Keyboard navigation with arrow keys, Return, and Escape
+- Launch at login toggle
+- HTML and image clipboard history support
 - Local JSON persistence
 
 ## Requirements

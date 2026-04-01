@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let store = ClipboardStore.shared
+    private let settings = AppSettings.shared
     private var statusItem: NSStatusItem?
     private var panel: NSPanel?
     private var hotkeyMonitor: GlobalHotkeyMonitor?
@@ -83,8 +84,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
         let rootView = ContentView(onItemActivated: { [weak self] item in
             self?.paste(item)
+        }, onDismiss: { [weak self] in
+            self?.hidePanel()
         })
         .environmentObject(store)
+        .environmentObject(settings)
 
         panel.contentView = NSHostingView(rootView: rootView)
         panel.center()
@@ -92,7 +96,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     private func configureHotkey() {
-        hotkeyMonitor = GlobalHotkeyMonitor { [weak self] in
+        hotkeyMonitor = GlobalHotkeyMonitor(settings: settings) { [weak self] in
             DispatchQueue.main.async {
                 self?.togglePanel()
             }
