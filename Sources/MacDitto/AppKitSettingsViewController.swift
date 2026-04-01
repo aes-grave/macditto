@@ -11,10 +11,10 @@ final class AppKitSettingsViewController: NSViewController {
     private let shortcutLabel = NSTextField(labelWithString: "")
     private let launchAtLoginCheckbox = NSButton(checkboxWithTitle: "Launch at Login", target: nil, action: nil)
     private let errorLabel = NSTextField(labelWithString: "")
+    private let contentStack = NSStackView()
 
     override func loadView() {
-        view = NSView()
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 220))
 
         let titleLabel = NSTextField(labelWithString: "Settings")
         titleLabel.font = .systemFont(ofSize: 22, weight: .semibold)
@@ -43,7 +43,12 @@ final class AppKitSettingsViewController: NSViewController {
         modifierPopup.addItems(withTitles: HotkeyModifierPreset.allCases.map(\.displayName))
         keyPopup.addItems(withTitles: HotkeyOption.all.map(\.key))
 
-        let stack = NSStackView(views: [
+        contentStack.orientation = .vertical
+        contentStack.alignment = .leading
+        contentStack.spacing = 12
+        contentStack.translatesAutoresizingMaskIntoConstraints = false
+
+        [
             titleLabel,
             hotkeyLabel,
             modifierRow,
@@ -52,19 +57,15 @@ final class AppKitSettingsViewController: NSViewController {
             startupLabel,
             launchAtLoginCheckbox,
             errorLabel
-        ])
-        stack.orientation = .vertical
-        stack.alignment = .leading
-        stack.spacing = 12
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        ].forEach { contentStack.addArrangedSubview($0) }
 
-        view.addSubview(stack)
+        view.addSubview(contentStack)
 
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20),
-            stack.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -20)
+            contentStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
+            contentStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            contentStack.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20),
+            contentStack.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -20)
         ])
     }
 

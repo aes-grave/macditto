@@ -22,6 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         configureHotkey()
     }
 
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        false
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
         hotkeyMonitor?.stop()
     }
@@ -83,6 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         )
         panel.title = "MacDitto"
         panel.isFloatingPanel = true
+        panel.isRestorable = false
         panel.level = .floating
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.delegate = self
@@ -124,6 +129,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         )
         window.title = "MacDitto Settings"
         window.isReleasedWhenClosed = false
+        window.isRestorable = false
         window.level = .floating
         window.center()
         window.contentViewController = AppKitSettingsViewController()
