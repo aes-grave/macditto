@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var panel: NSPanel?
     private var hotkeyMonitor: GlobalHotkeyMonitor?
     private let statusMenu = NSMenu()
+    private var previousApplication: NSRunningApplication?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -28,6 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             return
         }
 
+        capturePreviousApplication()
         positionPanel(panel)
         NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
@@ -80,8 +82,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         panel.delegate = self
 
         let rootView = ContentView(onItemActivated: { [weak self] item in
-            self?.store.copyAndPaste(item)
-            self?.hidePanel()
+            self?.paste(item)
         })
         .environmentObject(store)
 
@@ -109,6 +110,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let x = visibleFrame.midX - (panel.frame.width / 2)
         let y = visibleFrame.maxY - panel.frame.height - 60
         panel.setFrameOrigin(NSPoint(x: max(visibleFrame.minX, x), y: max(visibleFrame.minY, y)))
+    }
+
+    private func capturePreviousApplication() {
+        let current = NSWorkspace.shared.frontmostApplication
+        if current?.bundleIdentifier != Bundle.main.bundleIdentifier {
+            previousApplication = current
+        }
+    }
+
+    private func paste(_ item: ClipboardItem) {
+        store.copyToClipboard(item)
+        hidePanel()
+
+        guard let previousApplication else {
+            ClipboardPaster.pasteCurrentClipboard(afterDelay: 0.1)
+            return
+        }
+
+        previousApplication.activate(options: [.activateIgnoringOtherApps])
+        ClipboardPaster.pasteCurrentClipboard(afterDelay: 0.18)
     }
 
     @objc private func statusButtonPressed() {

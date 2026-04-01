@@ -71,11 +71,6 @@ final class ClipboardStore: ObservableObject {
         pasteboard.setString(item.value, forType: .string)
     }
 
-    func copyAndPaste(_ item: ClipboardItem) {
-        copyToClipboard(item)
-        ClipboardPaster.pasteCurrentClipboard()
-    }
-
     func delete(_ item: ClipboardItem) {
         items.removeAll { $0.id == item.id }
         persistHistory()
