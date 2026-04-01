@@ -64,7 +64,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func configureStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.title = "MacDitto"
+        item.button?.title = ""
+        item.button?.image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "MacDitto")
+        item.button?.imagePosition = .imageOnly
+        item.button?.toolTip = "MacDitto"
         item.button?.action = #selector(statusButtonPressed)
         item.button?.target = self
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])

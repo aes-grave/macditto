@@ -67,21 +67,42 @@ struct ContentView: View {
     }
 
     private var listView: some View {
-        List(selection: $selectedItemID) {
-            ForEach(store.filteredItems) { item in
-                ClipboardRow(
-                    item: item,
-                    isSelected: item.id == selectedItem?.id,
-                    onItemSelected: {
-                        selectedItemID = item.id
-                    },
-                    onItemActivated: onItemActivated
-                )
-                .environmentObject(store)
-                .tag(item.id)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(store.filteredItems) { item in
+                        ClipboardRow(
+                            item: item,
+                            isSelected: item.id == selectedItem?.id,
+                            onItemSelected: {
+                                selectedItemID = item.id
+                            },
+                            onItemActivated: onItemActivated
+                        )
+                        .environmentObject(store)
+                        .id(item.id)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            .background(Color(NSColor.textBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.secondary.opacity(0.12), lineWidth: 1)
+            )
+            .onChange(of: selectedItemID) { id in
+                guard let id else { return }
+                withAnimation(.easeInOut(duration: 0.12)) {
+                    proxy.scrollTo(id, anchor: .center)
+                }
+            }
+            .onAppear {
+                if let id = selectedItemID {
+                    proxy.scrollTo(id, anchor: .center)
+                }
             }
         }
-        .listStyle(.inset)
         .onMoveCommand(perform: moveSelection)
     }
 
@@ -214,7 +235,7 @@ private struct ClipboardRow: View {
             }
         }
         .padding(.vertical, 6)
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 8)
         .background(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
         .cornerRadius(8)
         .contentShape(Rectangle())
