@@ -117,13 +117,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func configureSettingsWindow() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 420, height: 240),
+            contentRect: NSRect(x: 0, y: 0, width: 440, height: 260),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false
         )
         window.title = "MacDitto Settings"
         window.isReleasedWhenClosed = false
+        window.level = .floating
         window.center()
         window.contentView = NSHostingView(
             rootView: SettingsView()
@@ -184,7 +185,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     @objc private func showSettings() {
+        if panel?.isVisible == true {
+            panel?.orderOut(nil)
+        }
         settingsWindow?.makeKeyAndOrderFront(nil)
+        settingsWindow?.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
     }
 
