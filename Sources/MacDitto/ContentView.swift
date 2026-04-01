@@ -72,6 +72,9 @@ struct ContentView: View {
                 ClipboardRow(
                     item: item,
                     isSelected: item.id == selectedItem?.id,
+                    onItemSelected: {
+                        selectedItemID = item.id
+                    },
                     onItemActivated: onItemActivated
                 )
                 .environmentObject(store)
@@ -136,6 +139,7 @@ private struct ClipboardRow: View {
     @EnvironmentObject private var store: ClipboardStore
     let item: ClipboardItem
     let isSelected: Bool
+    let onItemSelected: () -> Void
     let onItemActivated: (ClipboardItem) -> Void
 
     private var timestamp: String {
@@ -214,7 +218,11 @@ private struct ClipboardRow: View {
         .background(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
         .cornerRadius(8)
         .contentShape(Rectangle())
+        .onTapGesture {
+            onItemSelected()
+        }
         .onTapGesture(count: 2) {
+            onItemSelected()
             onItemActivated(item)
         }
     }
