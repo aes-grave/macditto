@@ -14,7 +14,7 @@ This repo is intentionally standalone. It does not depend on the original Window
 - Copy an entry back to the clipboard
 - Copy and immediately paste an entry
 - Menu bar app with popup panel
-- Global hotkey toggle with `Cmd+Shift+V`
+- Global hotkey toggle with `Ctrl+Shift+V`
 - Local JSON persistence
 
 ## Requirements

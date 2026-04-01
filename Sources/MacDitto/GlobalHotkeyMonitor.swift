@@ -32,7 +32,7 @@ final class GlobalHotkeyMonitor {
 
     private func handle(event: NSEvent) {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        let required: NSEvent.ModifierFlags = [.command, .shift]
+        let required: NSEvent.ModifierFlags = [.control, .shift]
 
         guard modifiers == required, event.keyCode == 9 else {
             return
